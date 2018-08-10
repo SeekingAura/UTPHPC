@@ -36,6 +36,7 @@ class matrices:
 
 if __name__ == "__main__":
 	# matrix
+	#print("execute secuential")
 	timeit.default_timer()
 	
 	fileRead=open("input.txt", "r").read()
@@ -55,16 +56,16 @@ if __name__ == "__main__":
 	#for i in matrixB:
 	#	print(i)
 	### show input data Matrix B
-	startTime=timeit.default_timer()
 	opMatrix=matrices(matrixA, matrixB)
+	startTime=timeit.default_timer()
 	opMatrix.operateAll()
 	endTime=timeit.default_timer()
 	#print("execute time", endTime-startTime)
 
 	fileSave=open("times-Secuencial.txt", "a")
-	fileSave.write(str(len(matrixA))+"	"+str(endTime-startTime)+"\n")
+	fileSave.write(str(len(matrixA))+"	"+str(endTime-startTime).replace(".", ",")+"\n")
 	fileSave.close()
-
+	#print("END execute secuential")
 	#show result
 	#print("result")
-	#print(opMatrix.matrixResult)
+	# print(opMatrix.matrixResult)

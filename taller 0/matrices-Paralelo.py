@@ -20,6 +20,7 @@ class matrices:
 		filaPos=int(pos/len(self.matrixA))# find row to result
 		columPos=pos%len(self.matrixA)# find column to result
 		for row, i in enumerate(self.matrixA[filaPos]):
+			# print("doing thread", pos)
 			result+=i*self.matrixB[row][columPos]
 		self.matrixResult[filaPos][columPos]=result
 
@@ -35,6 +36,7 @@ class matrices:
 
 if __name__ == "__main__":
 	# matrix
+	#print("execute paralelo")
 	timeit.default_timer()
 	fileRead=open("input.txt", "r").read()
 	matrixA, matrixB=fileRead.split("\n")
@@ -55,23 +57,28 @@ if __name__ == "__main__":
 	### show input data Matrix B
 	opMatrix=matrices(matrixA, matrixB)
 	startTime=timeit.default_timer()
+	#startTimeCreate=timeit.default_timer()
 	hilos=[]
 	for i in range(len(matrixA)*len(matrixA[0])):
-		hilo1=threading.Thread(target=opMatrix.operatePOS(i))
+		hilo1=threading.Thread(target=opMatrix.operatePOS, args=([i]))
 		hilos.append(hilo1)
-	
+	#endTimeCreate=timeit.default_timer()
+	#startTimeExecute=timeit.default_timer()
 	for i in hilos:
 		i.start()
 
 	for i in hilos:
 		i.join()
-	endTime=timeit.default_timer()
+	#endTimeExecute=timeit.default_timer()
+	#endTime=timeit.default_timer()
+	#print("tiempo creando hilos", #endTimeCreate-startTimeCreate)
+	#print("tiempo execute ", endTimeExecute-startTimeExecute)
 	#print("execute time", endTime-startTime)
 
 	fileSave=open("times-Paralelo.txt", "a")
-	fileSave.write(str(len(matrixA))+"	"+str(endTime-startTime)+"\n")
+	fileSave.write(str(len(matrixA))+"	"+str(endTime-startTime).replace(".", ",")+"\n")
 	fileSave.close()
-
+	#print("END execute paralelo")
 
 	#show result
 	#print(opMatrix.matrixResult)
