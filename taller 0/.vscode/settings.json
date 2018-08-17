@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "string_view": "cpp",
+        "chrono": "cpp",
+        "initializer_list": "cpp",
+        "istream": "cpp",
+        "ostream": "cpp",
+        "ratio": "cpp",
+        "system_error": "cpp",
+        "type_traits": "cpp"
+    }
+}

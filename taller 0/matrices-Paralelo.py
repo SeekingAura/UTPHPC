@@ -70,7 +70,7 @@ if __name__ == "__main__":
 	for i in hilos:
 		i.join()
 	#endTimeExecute=timeit.default_timer()
-	#endTime=timeit.default_timer()
+	endTime=timeit.default_timer()
 	#print("tiempo creando hilos", #endTimeCreate-startTimeCreate)
 	#print("tiempo execute ", endTimeExecute-startTimeExecute)
 	#print("execute time", endTime-startTime)
