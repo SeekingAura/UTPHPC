@@ -1,5 +1,5 @@
 if __name__ == "__main__":
-	fileReadParalelo=open("timesc++Parallel.txt", "r").read()
+	fileReadParalelo=open("timesc++Secuential.txt", "r").read()
 	data=fileReadParalelo.split("\n")
 	temp=0
 	count=1

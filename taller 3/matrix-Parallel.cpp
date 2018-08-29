@@ -1,11 +1,6 @@
-#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <string.h>
-#include <chrono>
-#include <ctime>
-#include <ratio>
 #include <omp.h>
 using namespace std;
 
@@ -168,8 +163,8 @@ class matrix{
 			threadmasterId = omp_get_thread_num();
 			if(threadmasterId == 0){
 				numThreads = omp_get_num_threads();
-				printf("Thread master! with id %d\n",threadmasterId);
-				printf("Invoked threads number %d",numThreads);
+				// printf("Thread master! with id %d\n",threadmasterId);
+				// printf("Invoked threads number %d",numThreads);
 			}
 			#pragma omp for schedule(dynamic,chunk)
 				for(i=0; i<M1row; i++){//every row m1
@@ -232,13 +227,12 @@ class matrix{
 
 
 
-void writeTime(float elapsed, size_t len){
+void writeTime(double elapsed, size_t len){
 		/*
-			Wite the result on output.txt file
+			Wite the time on timesc++Parallel.txt file
 			M -> Matrix, Mrow -> Matrix rows, Mcol -> Matrix columns
 		*/
 		FILE *f = fopen("timesc++Parallel.txt","a+");//write at end of file and set result, append
-		//float value=;
 		fprintf(f,"%i	%.9f\n", len, elapsed);
 		fclose(f);
 }
@@ -254,12 +248,12 @@ int main(int argc, char const *argv[]) {
 	
 
 
-	auto startTime=chrono::high_resolution_clock::now();
+	double startTime = omp_get_wtime();
 	opMatrix.mulParallelRow(opMatrix.MResult, opMatrix.M1, opMatrix.M2, opMatrix.M1row, opMatrix.M2col);
-	auto endTime=chrono::high_resolution_clock::now();
-	chrono::duration<float>  elapsed = endTime - startTime;
-	writeTime(elapsed.count(), opMatrix.M1row);
-	// pthread_exit(NULL);
+	double endTime = omp_get_wtime();
+	double elapsed = endTime - startTime;
+	writeTime(elapsed, opMatrix.M1row);
+	
 	// opMatrix.printOperators();
 	// opMatrix.printResult();
 	return 0;

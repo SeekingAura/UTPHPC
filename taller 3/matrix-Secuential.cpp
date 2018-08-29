@@ -1,11 +1,7 @@
-#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <string.h>
-#include <chrono>
-#include <ctime>
-#include <ratio>
+#include <omp.h>
 using namespace std;
 
 
@@ -196,7 +192,7 @@ class matrix{
 
 };
 
-void writeTime(float elapsed, size_t len){
+void writeTime(double elapsed, size_t len){
 		/*
 			Wite the result on output.txt file
 			M -> Matrix, Mrow -> Matrix rows, Mcol -> Matrix columns
@@ -218,12 +214,13 @@ int main(int argc, char const *argv[]) {
 
 
 
-	auto startTime=chrono::high_resolution_clock::now();
+	double startTime = omp_get_wtime();
 	opMatrix.mulSecuential();
-	auto endTime=chrono::high_resolution_clock::now();
-	chrono::duration<float>  elapsed = endTime - startTime;
-	writeTime(elapsed.count(), opMatrix.M1row);
+	double endTime = omp_get_wtime();
+	double elapsed = endTime - startTime;
+	writeTime(elapsed, opMatrix.M1row);
 	
-	// opMatrix.writeResult();
+	// opMatrix.printOperators();
+	// opMatrix.printResult();
 	return 0;
 }
