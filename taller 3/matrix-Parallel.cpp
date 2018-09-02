@@ -26,7 +26,7 @@ class matrix{
 
 		this->M2=this->buildMatrix(f1, this->M2row, this->M2col);
 		this->getData(f1, this->M2, this->M2row*this->M2col);
-		this->MResult=(int *)malloc(this->M1row*this->M2row*sizeof(int));
+		this->MResult=(int *)malloc(this->M1row*this->M2col*sizeof(int));
 		
 		
 		
