@@ -8,4 +8,6 @@ Evalue:
 
 Haga un análisis y soportelo con un documento de análisis.
 
-https://bisqwit.iki.fi/story/howto/openmp
+https://bisqwit.iki.fi/story/howto/openmp/
+
+should: execute.bat 1000000

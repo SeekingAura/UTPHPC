@@ -35,23 +35,23 @@ double calcPiDartboardParallel(long n){
 	int threadmasterId = 0, numThreads = 0;
 	#pragma omp parallel private(x,y,k,threadmasterId,numThreads) shared(hits,chunk) //num_threads(8)
 	{
-		threadmasterId = omp_get_thread_num();
-		if(threadmasterId == 0){
-			numThreads = omp_get_num_threads();
+		//threadmasterId = omp_get_thread_num();
+		//if(threadmasterId == 0){
+		//	numThreads = omp_get_num_threads();
 			// printf("Thread master! with id %d\n",threadmasterId);
 			// printf("Invoked threads number %d",numThreads);
-		}
-		#pragma omp parallel for
+		//}
+		#pragma omp for schedule(dynamic,chunk)
 			for(k=0; k<n; ++k){
 				/* find two numbers within 0..1*/
-				x=rand()*factor;
+				x=rand()*factor; 
 				y=rand()*factor;        
 				if(x*x + y*y < 1.0){
 					++hits;
 				}
 			}
+		
 	}
-	
 	return 4.0*hits/n;
 }
 
@@ -62,7 +62,7 @@ void writeTime(float elapsed, long len){
 		Wite the result on output.txt file
 		M -> Matrix, Mrow -> Matrix rows, Mcol -> Matrix columns
 	*/
-	FILE *f = fopen("timesc++ParallelFor.txt","a+");//write at end of file and set result, append
+	FILE *f = fopen("timesc++ParallelSchedule.txt","a+");//write at end of file and set result, append
 	//float value=;
 	fprintf(f,"%ld	%.9f\n", len, elapsed);
 	fclose(f);

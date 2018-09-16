@@ -11,7 +11,8 @@ if __name__ == "__main__":
 	resultDict={}
 	for i in data:
 		try:
-			tam, resultInput=i.split("	")
+			tam, iteration, resultInput=i.split("	")
+			tam+="	"+iteration
 		except:
 			# print("se hizo except {}".format(i))
 			continue
@@ -22,18 +23,13 @@ if __name__ == "__main__":
 			resultDict[tam]=[]
 			resultDict.get(tam).append(float(resultInput))
 		
-	fileWriteParalelo=open(sys.argv[1].replace(".txt"," result.txt"), "w")
-	times={}
-	for i in [str(y) for y in sorted([int(x) for x in resultDict])]:# order by number
+	fileWriteParalelo=open("times-result.txt", "w")
+	for i in [str(y) for y in sorted([x for x in resultDict])]:
 		result=0
 		for j in resultDict.get(i):
 			result+=j
 			# print("variable {}, total {}".format(i, j))
 		fileWriteParalelo.write(str(i)+"	"+str(result/len(resultDict.get(i))).replace(".", ",")+"\n")
-		times[i]=len(resultDict.get(i))
-	fileWriteParalelo.write("\n"+"#"*50+"\n")
-	for time in times:
-		fileWriteParalelo.write(str(time)+" -> "+str(times.get(time))+"\n")
 	fileWriteParalelo.close()
 			
 
