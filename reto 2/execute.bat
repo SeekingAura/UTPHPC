@@ -1,5 +1,4 @@
 @ECHO OFF
-::1000000
 SET /A start=1000
 SET /A end=9000
 SET /A iterator=1000
@@ -14,9 +13,6 @@ FOR /L %%i IN (%start%,%iterator%,%end%) DO (
 		testSecuential.exe %1 %%i
 	)
 )
-::IF /I %iterator% GTR 1 (
-::	SET /A iterator=%iterator%*2
-::)
 SET /A start=%end%+%iterator%
 SET /A iterator=%iterator%*10
 SET /A end=%iterator%*10-%iterator%

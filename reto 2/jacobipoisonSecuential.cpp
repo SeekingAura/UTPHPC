@@ -51,12 +51,7 @@ void write_solution(int n, double* u, const char* fname){
 }
 
 void writeTime(float elapsed, int valueK, int len){
-	/*
-		Wite the result on output.txt file
-		M -> Matrix, Mrow -> Matrix rows, Mcol -> Matrix columns
-	*/
 	FILE *f = fopen("timesc++Secuential.txt","a+");//write at end of file and set result, append
-	//float value=;
 	fprintf(f,"%ld	%ld	%.9f\n", valueK, len, elapsed);
 	fclose(f);
 }

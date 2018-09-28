@@ -48,8 +48,7 @@ void jacobi(int nsweeps, int n, double* u, double* f){
     printf("formando data de hilos\n");
     struct threadData data[numThreads];
     pthread_mutex_init(&mutex, NULL);
-    for (int sweep = 0; sweep < nsweeps; sweep += 2) {
-        
+    for (int sweep = 0; sweep < nsweeps; sweep += 2) {  
         /* Old data in u; new data in utmp */
         for (int i = 0, workStart=1, workEnd=chunk+1; i < numThreads; i++, workStart+=chunk, workEnd+=chunk){
             printf("creando el hilo num %i\n", i);
@@ -109,12 +108,7 @@ void write_solution(int n, double* u, const char* fname){
 }
 
 void writeTime(float elapsed, int valueK, int len){
-	/*
-		Wite the result on output.txt file
-		M -> Matrix, Mrow -> Matrix rows, Mcol -> Matrix columns
-	*/
 	FILE *f = fopen("timesc++Thread.txt","a+");//write at end of file and set result, append
-	//float value=;
 	fprintf(f,"%ld	%ld	%.9f\n", valueK, len, elapsed);
 	fclose(f);
 }
