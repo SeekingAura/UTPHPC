@@ -294,7 +294,7 @@ int main(int argc, char *argv[]) {
 				endPart=opMatrix.M1row;
 			}
 			MPI_Recv(&Mtemp, endPart-startPart, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD, &status);
-			for(int numRow=startPart numPos=0; numRow<endPart; numRow++){//Fill part of MatrixTemp (operator rows) into MResult
+			for(int numRow=startPart, numPos=0; numRow<endPart; numRow++){//Fill part of MatrixTemp (operator rows) into MResult
 				for(int numCol=0; numCol<opMatrix.M1col; numCol++, numPos++){
 					opMatrix.MResult[numRow*opMatrix.M1row+numCol]=Mtemp[numPos];
 				}
