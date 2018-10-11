@@ -276,7 +276,7 @@ int main(int argc, char *argv[]) {
 			MPI_Send(&sizeTemp, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
 			MPI_Send(&opMatrix.M1col, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
 			Mtemp= new int[(sizeTemp)*opMatrix.M1col];
-			for(int numRow=startPart numPos=0; numRow<endPart; numRow++){//Fill part of MatrixTemp (operator rows)
+			for(int numRow=startPart, numPos=0; numRow<endPart; numRow++){//Fill part of MatrixTemp (operator rows)
 				for(int numCol=0; numCol<opMatrix.M1col; numCol++, numPos++){
 					Mtemp[numPos]=opMatrix.M1[numRow*opMatrix.M1row+numCol]
 				}
