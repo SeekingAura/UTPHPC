@@ -249,13 +249,6 @@ void writeTime(double elapsed, int numRows){
 
 
 
-
-void writeTime(float elapsed, int valueK, int len){
-	FILE *f = fopen("timesc++MPI.txt","a+");//write at end of file and set result, append
-	fprintf(f,"%i	%.9f\n", valueK, len, elapsed);
-	fclose(f);
-}
-
 int main(int argc, char const *argv[]) {
 	if(argc != 2){
 		printf("There should be 2 arguments!\n");
