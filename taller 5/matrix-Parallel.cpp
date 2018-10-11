@@ -16,7 +16,7 @@ class matrix{
 	//constructor
 	matrix();
 
-	matrix(char *fileName1, bool useMR){
+	void construct(char *fileName1){
 		FILE *f1=NULL; /* file pointers */
 		//this->buildMatrix();
 		//printf("constructor\n");
@@ -255,14 +255,14 @@ int main(int argc, char *argv[]) {
 	}
 	int p_id;
   	int p;
-
+	matrix opMatrix();
 	MPI_Status status;
 	MPI_Init ( &argc, &argv );
 	MPI_Comm_rank ( MPI_COMM_WORLD, &p_id );//identifica el número de equipo que está corriendo
 	MPI_Comm_size ( MPI_COMM_WORLD, &p );//identifica el total de equipos que se usarán
 	auto startTime=std::chrono::high_resolution_clock::now();
 	if(p_id==0){//Header Part
-		matrix opMatrix(argv[1], 0);
+		opMatrix.Construct(argv[1]);
 		int stepPart=opMatrix.M1row/(p-1), sizeTemp=0, *Mtemp;
 		
 		for(int nodeWorkerId=1, startPart=0, endPart=opMatrix.M1row/(p-1);nodeWorkerId<=p;nodeWorkerId++, endPart+=stepPart){
@@ -302,7 +302,7 @@ int main(int argc, char *argv[]) {
 		opMatrix.printResult();
 	}else{//Workers part
 		int NodeHeaderId=0;
-		matrix opMatrix();
+		
 		// M1 info
 		printf("%i", opMatrix.M1row);
 		MPI_Recv(&opMatrix.M1row, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
