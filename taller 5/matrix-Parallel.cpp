@@ -14,9 +14,9 @@ class matrix{
 	int *M1, *M2, *MResult; /* matrices (M1,M2) */
 	int M1row=0, M1col=0, M2row=0, M2col=0;
 	//constructor
-	matrix():{};
+	matrix();
 
-	matrix(char *fileName1, bool useMR):{
+	matrix(char *fileName1, bool useMR){
 		FILE *f1=NULL; /* file pointers */
 		//this->buildMatrix();
 		//printf("constructor\n");
