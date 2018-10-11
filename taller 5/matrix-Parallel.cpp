@@ -11,7 +11,7 @@ using namespace std;
 class matrix{
 	public:
 	int *M1, *M2, *MResult; /* matrices (M1,M2) */
-	size_t M1row=0,M1col=0, M2row=0, M2col=0;
+	int M1row=0,M1col=0, M2row=0, M2col=0;
 	//constructor
 	matrix(){
 
@@ -36,7 +36,7 @@ class matrix{
 		//f2=this->openFile(fileName2);
 
 
-		// fscanf(f,"%i",this->M2row); /* %zu zx is size_t */
+		// fscanf(f,"%i",this->M2row); /* %zu zx is int */
 		// fscanf(f,"%i",this->M2col);	
 
 	}
@@ -58,9 +58,9 @@ class matrix{
 		return f;
 	}
 
-	int * buildMatrix(FILE *f, size_t &rows, size_t &columns){
+	int * buildMatrix(FILE *f, int &rows, int &columns){
 		/* build a matrix M (get memory) */
-		fscanf(f,"%i",&rows); /* %zu zx is size_t */
+		fscanf(f,"%i",&rows); /* %zu zx is int */
 		fscanf(f,"%i",&columns);
 		//fgetc(f);  /* skipping nasty character, on this case new line */
 		int *M;
@@ -72,7 +72,7 @@ class matrix{
 		return M;
 	}
 
-	void getData(FILE *f, int *M, size_t len){
+	void getData(FILE *f, int *M, int len){
 		/* Capture data from plain text file to system memory
 		Note: the data files need one end line to get last number
 		format of data files 
@@ -88,7 +88,7 @@ class matrix{
 		*/
 		//sizeof(char)==1
 		char data[10]="", ch = ' ';
-		size_t posData = 0, Mindex = 0;
+		int posData = 0, Mindex = 0;
 		while(len>Mindex){
 			ch = fgetc(f); /*get char and char in file f */
 			if(Mindex==0 && ch == '\n'){//skip nasty chracter
@@ -122,8 +122,8 @@ class matrix{
 			M -> Matrix, Mrow -> Matrix rows, Mcol -> Matrix columns
 		*/
 		FILE *f = fopen("output.txt","w+");//clean file and set result
-		for(size_t i=0;i<this->M1row;i++){
-			for(size_t j=0;j<this->M2col;j++){
+		for(int i=0;i<this->M1row;i++){
+			for(int j=0;j<this->M2col;j++){
 				if(j+1 == this->M2col) {//last chracter
 					fprintf(f,"%i\n",this->MResult[i*this->M2col + j]);
 				}
@@ -152,10 +152,10 @@ class matrix{
 			columns, M2row -> Matrix2 rows, M2col -> Matrix2 columns
 		*/
 
-		for(size_t i=0; i<this->M1row; i++){//every row m1
-			for(size_t j=0; j<this->M2col; j++){//every column m2
+		for(int i=0; i<this->M1row; i++){//every row m1
+			for(int j=0; j<this->M2col; j++){//every column m2
 				int data = 0;
-				for(size_t k=0; k<this->M1col; k++){//take in row per value column
+				for(int k=0; k<this->M1col; k++){//take in row per value column
 					data = this->M1[i*this->M1col+k] * this->M2[k*this->M2col+j] + data;
 				}
 				MResult[i*this->M1col+j] = data;
@@ -169,7 +169,7 @@ class matrix{
 			M1 -> Matrix1, M2 -> Matrix2, M1row -> Matrix1 rows, M1col -> Matrix1
 			columns, M2row -> Matrix2 rows, M2col -> Matrix2 columns
 		*/
-		size_t i=0,j=0,k=0, chunk=this->M1row/8;
+		int i=0,j=0,k=0, chunk=this->M1row/8;
 		int numThreads = 0;
 		if(chunk==0){
 			chunk=1;
@@ -192,7 +192,7 @@ class matrix{
 
 
 
-	void printMatrix(int *M, size_t row, size_t col){
+	void printMatrix(int *M, int row, int col){
 		/* getting pos of matrix
 			->> rowi
 			0 | 1 | 2
@@ -202,8 +202,8 @@ class matrix{
 			columns -> 3
 			rowi*columns+columni=pos
 		*/
-		for(size_t i=0; i<row; i++){
-			for(size_t j=0; j<col; j++){
+		for(int i=0; i<row; i++){
+			for(int j=0; j<col; j++){
 				if(j==col-1){
 					printf("%i", M[i*col+j]);
 				}else{
@@ -237,13 +237,13 @@ class matrix{
 
 
 
-void writeTime(double elapsed, size_t len){
+void writeTime(double elapsed, int numRows){
 		/*
 			Wite the time on timesc++Parallel.txt file
 			M -> Matrix, Mrow -> Matrix rows, Mcol -> Matrix columns
 		*/
 		FILE *f = fopen("timesc++Parallel.txt","a+");//write at end of file and set result, append
-		fprintf(f,"%i	%.9f\n", len, elapsed);
+		fprintf(f,"%i	%.9f\n", numRows, elapsed);
 		fclose(f);
 }
 
@@ -328,7 +328,7 @@ int main(int argc, char const *argv[]) {
 		MPI_Send(opMatrix.MResult, opMatrix.M1row*opMatrix.M2col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD);
 	}
 	auto endTime=std::chrono::high_resolution_clock::now();
-	writeTime(elapsed.count(), n, nsteps);
+	writeTime(elapsed.count(), opMatrix.M2row);
 
 	double startTime = omp_get_wtime();
 	opMatrix.mulParallelRow(opMatrix.MResult, opMatrix.M1, opMatrix.M2, opMatrix.M1row, opMatrix.M2col);
