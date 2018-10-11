@@ -272,18 +272,18 @@ int main(int argc, char *argv[]) {
 			if(nodeWorkerId==p){
 				endPart=opMatrix.M1row;
 			}
-			MPI_Send(endPart-startPart, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
-			MPI_Send(opMatrix.M1col, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
+			MPI_Send(&(endPart-startPart), 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
+			MPI_Send(&opMatrix.M1col, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
 			Mtemp= new int[(endPart-startPart)*opMatrix.M1col]
 			for(int numRow=startPart numPos=0; numRow<endPart; numRow++){//Fill part of MatrixTemp (operator rows)
 				for(int numCol=0; numCol<opMatrix.M1col; numCol++, numPos++){
 					Mtemp[numPos]=opMatrix.M1[numRow*opMatrix.M1row+numCol]
 				}
 			}
-			MPI_Send(opMatrix.M2row, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
-			MPI_Send(opMatrix.M2col, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
-			MPI_Send(MTemp, endPart-startPart,MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
-			MPI_Send(opMatrix.M2, opMatrix.M2row*opMatrix.M2col, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
+			MPI_Send(&opMatrix.M2row, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
+			MPI_Send(&opMatrix.M2col, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
+			MPI_Send(&MTemp, endPart-startPart,MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
+			MPI_Send(&opMatrix.M2, opMatrix.M2row*opMatrix.M2col, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
 			startPart=endPart;
 			delete [] Mtemp;
 		}
@@ -292,7 +292,7 @@ int main(int argc, char *argv[]) {
 			if(nodeWorkerId==p){
 				endPart=opMatrix.M1row;
 			}
-			MPI_Recv(MTemp, endPart-startPart, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD, &status);
+			MPI_Recv(&MTemp, endPart-startPart, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD, &status);
 			for(int numRow=startPart numPos=0; numRow<endPart; numRow++){//Fill part of MatrixTemp (operator rows) into MResult
 				for(int numCol=0; numCol<opMatrix.M1col; numCol++, numPos++){
 					opMatrix.MResult[numRow*opMatrix.M1row+numCol]=Mtemp[numPos];
@@ -305,29 +305,23 @@ int main(int argc, char *argv[]) {
 		int NodeHeaderId=0;
 		matrix opMatrix();
 		// M1 info
-		MPI_Recv(opMatrix.M1row, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
-		MPI_Recv(opMatrix.M1col, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
+		MPI_Recv(&opMatrix.M1row, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
+		MPI_Recv(&opMatrix.M1col, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 
 		//M2 info
-		MPI_Recv(opMatrix.M2row, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
-		MPI_Recv(opMatrix.M2col, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
+		MPI_Recv(&opMatrix.M2row, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
+		MPI_Recv(&opMatrix.M2col, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 
 		opMatrix.buildMatrixTemp();
-		MPI_Recv(opMatrix.M1, opMatrix.M1row*opMatrix.M1col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
-		MPI_Recv(opMatrix.M2, opMatrix.M2row*opMatrix.M2col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
+		MPI_Recv(&opMatrix.M1, opMatrix.M1row*opMatrix.M1col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
+		MPI_Recv(&opMatrix.M2, opMatrix.M2row*opMatrix.M2col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 
 		opMatrix.mulParallelRow(opMatrix.MResult, opMatrix.M1, opMatrix.M2, opMatrix.M1row, opMatrix.M2col);
 
-		MPI_Send(opMatrix.MResult, opMatrix.M1row*opMatrix.M2col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD);
+		MPI_Send(&opMatrix.MResult, opMatrix.M1row*opMatrix.M2col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD);
 	}
 	auto endTime=std::chrono::high_resolution_clock::now();
 	writeTime(elapsed.count(), opMatrix.M2row);
-
-	double startTime = omp_get_wtime();
-	opMatrix.mulParallelRow(opMatrix.MResult, opMatrix.M1, opMatrix.M2, opMatrix.M1row, opMatrix.M2col);
-	double endTime = omp_get_wtime();
-	double elapsed = endTime - startTime;
-	writeTime(elapsed, opMatrix.M1row);
 	
 	// opMatrix.printOperators();
 	// opMatrix.printResult();
