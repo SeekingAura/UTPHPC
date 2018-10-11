@@ -4,6 +4,7 @@
 #include <mpi.h>
 #include <chrono>
 #include <omp.h>
+#define MSGTAG   0
 using namespace std;
 
 
@@ -256,7 +257,6 @@ int main(int argc, char *argv[]) {
 	}
 	int p_id;
   	int p;
-	int MSGTAG=0;
 
 	MPI_Status status;
 	MPI_Init ( &argc, &argv );
