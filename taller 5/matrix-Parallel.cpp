@@ -265,7 +265,7 @@ int main(int argc, char *argv[]) {
 	auto startTime=std::chrono::high_resolution_clock::now();
 	if(p_id==0){//Header Part
 		matrix opMatrix(argv[1], 0);
-		int stepPart=opMatrix.M1row/(p-1), sizeTemp=0;
+		int stepPart=opMatrix.M1row/(p-1), sizeTemp=0, *MTemp;
 		
 		for(int nodeWorkerId=1, startPart=0, endPart=opMatrix.M1row/(p-1);nodeWorkerId<=p;nodeWorkerId++, endPart+=stepPart){
 			
