@@ -278,12 +278,12 @@ int main(int argc, char *argv[]) {
 			Mtemp= new int[(sizeTemp)*opMatrix.M1col];
 			for(int numRow=startPart, numPos=0; numRow<endPart; numRow++){//Fill part of MatrixTemp (operator rows)
 				for(int numCol=0; numCol<opMatrix.M1col; numCol++, numPos++){
-					Mtemp[numPos]=opMatrix.M1[numRow*opMatrix.M1row+numCol]
+					Mtemp[numPos]=opMatrix.M1[numRow*opMatrix.M1row+numCol];
 				}
 			}
 			MPI_Send(&opMatrix.M2row, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
 			MPI_Send(&opMatrix.M2col, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
-			MPI_Send(&MTemp, sizeTemp,MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
+			MPI_Send(&Mtemp, sizeTemp,MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
 			MPI_Send(&opMatrix.M2, opMatrix.M2row*opMatrix.M2col, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
 			startPart=endPart;
 			delete [] Mtemp;
@@ -293,7 +293,7 @@ int main(int argc, char *argv[]) {
 			if(nodeWorkerId==p){
 				endPart=opMatrix.M1row;
 			}
-			MPI_Recv(&MTemp, endPart-startPart, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD, &status);
+			MPI_Recv(&Mtemp, endPart-startPart, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD, &status);
 			for(int numRow=startPart numPos=0; numRow<endPart; numRow++){//Fill part of MatrixTemp (operator rows) into MResult
 				for(int numCol=0; numCol<opMatrix.M1col; numCol++, numPos++){
 					opMatrix.MResult[numRow*opMatrix.M1row+numCol]=Mtemp[numPos];
