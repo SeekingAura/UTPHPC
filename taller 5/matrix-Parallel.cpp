@@ -249,7 +249,7 @@ void writeTime(double elapsed, int numRows){
 
 
 
-int main(int argc, char const *argv[]) {
+int main(int argc, char *argv[]) {
 	if(argc != 2){
 		printf("There should be 2 arguments!\n");
 		exit(1);
