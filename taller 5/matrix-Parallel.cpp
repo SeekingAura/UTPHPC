@@ -265,16 +265,17 @@ int main(int argc, char *argv[]) {
 	auto startTime=std::chrono::high_resolution_clock::now();
 	if(p_id==0){//Header Part
 		matrix opMatrix(argv[1], 0);
-		int stepPart=opMatrix.M1row/(p-1);
+		int stepPart=opMatrix.M1row/(p-1), sizeTemp=0;
 		
 		for(int nodeWorkerId=1, startPart=0, endPart=opMatrix.M1row/(p-1);nodeWorkerId<=p;nodeWorkerId++, endPart+=stepPart){
 			
 			if(nodeWorkerId==p){
 				endPart=opMatrix.M1row;
 			}
-			MPI_Send(&(endPart-startPart), 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
+			sizeTemp=endPart-startPart;
+			MPI_Send(&sizeTemp, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
 			MPI_Send(&opMatrix.M1col, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
-			Mtemp= new int[(endPart-startPart)*opMatrix.M1col]
+			Mtemp= new int[(sizeTemp)*opMatrix.M1col];
 			for(int numRow=startPart numPos=0; numRow<endPart; numRow++){//Fill part of MatrixTemp (operator rows)
 				for(int numCol=0; numCol<opMatrix.M1col; numCol++, numPos++){
 					Mtemp[numPos]=opMatrix.M1[numRow*opMatrix.M1row+numCol]
@@ -282,7 +283,7 @@ int main(int argc, char *argv[]) {
 			}
 			MPI_Send(&opMatrix.M2row, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
 			MPI_Send(&opMatrix.M2col, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
-			MPI_Send(&MTemp, endPart-startPart,MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
+			MPI_Send(&MTemp, sizeTemp,MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
 			MPI_Send(&opMatrix.M2, opMatrix.M2row*opMatrix.M2col, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
 			startPart=endPart;
 			delete [] Mtemp;
