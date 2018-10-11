@@ -15,7 +15,12 @@ class matrix{
 	int M1row=0, M1col=0, M2row=0, M2col=0;
 	//constructor
 	matrix();
-
+	//destructor
+	//~matrix(){
+	//	delete [] this->M1;
+	//	delete [] this->M2;
+	//	delete [] this->MResult;
+	//}
 	void construct(char *fileName1){
 		FILE *f1=NULL; /* file pointers */
 		//this->buildMatrix();
@@ -39,12 +44,7 @@ class matrix{
 		// fscanf(f,"%i",this->M2col);	
 
 	}
-	//destructor
-	~matrix(){
-		delete [] this->M1;
-		delete [] this->M2;
-		delete [] this->MResult;
-	}
+	
 
 	FILE * openFile(char const *fileName){
 		/* try to open a file */
@@ -262,7 +262,7 @@ int main(int argc, char *argv[]) {
 	MPI_Comm_size ( MPI_COMM_WORLD, &p );//identifica el total de equipos que se usarán
 	auto startTime=std::chrono::high_resolution_clock::now();
 	if(p_id==0){//Header Part
-		opMatrix.Construct(argv[1]);
+		opMatrix.construct(argv[1]);
 		int stepPart=opMatrix.M1row/(p-1), sizeTemp=0, *Mtemp;
 		
 		for(int nodeWorkerId=1, startPart=0, endPart=opMatrix.M1row/(p-1);nodeWorkerId<=p;nodeWorkerId++, endPart+=stepPart){
