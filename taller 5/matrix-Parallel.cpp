@@ -15,6 +15,11 @@ class matrix{
 	int M1row=0, M1col=0, M2row=0, M2col=0;
 	//constructor
 	matrix(){
+		this->M1row=0;
+		this->M1col=0;
+
+		this->M2row=0;
+		this->M2col=0;
 
 	}
 
@@ -304,19 +309,14 @@ int main(int argc, char *argv[]) {
 		opMatrix.printResult();
 	}else{//Workers part
 		int NodeHeaderId=0;
-		int intRecv=0, *intArrayRecv;
 		matrix opMatrix();
 		// M1 info
-		
-		MPI_Recv(&intRecv, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
-		opMatrix.M1row=intRecv;
-		MPI_Recv(&intRecv, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
-		opMatrix.M1col=intRecv;
+		MPI_Recv(&opMatrix.M1row, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
+		MPI_Recv(&opMatrix.M1col, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
+
 		//M2 info
-		MPI_Recv(&intRecv, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
-		opMatrix.M2row=intRecv;
-		MPI_Recv(&intRecv, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
-		opMatrix.M2col=intRecv;
+		MPI_Recv(&opMatrix.M2row, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
+		MPI_Recv(&opMatrix.M2col, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 
 		opMatrix.buildMatrixTemp();
 		MPI_Recv(&opMatrix.M1, opMatrix.M1row*opMatrix.M1col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
