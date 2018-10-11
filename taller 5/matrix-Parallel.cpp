@@ -311,6 +311,7 @@ int main(int argc, char *argv[]) {
 		int NodeHeaderId=0;
 		matrix opMatrix();
 		// M1 info
+		printf("%i", opMatrix.M1row);
 		MPI_Recv(&opMatrix.M1row, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 		MPI_Recv(&opMatrix.M1col, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 
