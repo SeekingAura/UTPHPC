@@ -252,7 +252,7 @@ void writeTime(double elapsed, int numRows){
 
 void writeTime(float elapsed, int valueK, int len){
 	FILE *f = fopen("timesc++MPI.txt","a+");//write at end of file and set result, append
-	fprintf(f,"%ld	%.9f\n", valueK, len, elapsed);
+	fprintf(f,"%i	%.9f\n", valueK, len, elapsed);
 	fclose(f);
 }
 
