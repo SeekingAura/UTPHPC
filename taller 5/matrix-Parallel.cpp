@@ -284,7 +284,7 @@ int main(int argc, char *argv[]) {
 		MPI_Recv(&M1, M1row*M1col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 		MPI_Recv(&M2, M2row*M2col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 
-		opMatrix.mulParallelRow(MResult, M1, M2, M1row, M2col);
+		mulParallelRow(MResult, M1, M2, M1row, M2col);
 
 		MPI_Send(&MResult, M1row*M2col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD);
 	}
