@@ -218,10 +218,10 @@ void writeTime(double elapsed, int numRows){
 
 
 int main(int argc, char *argv[]) {
-	if(argc != 2){
-		printf("There should be 2 arguments!\n");
-		exit(1);
-	}
+	//if(argc != 2){
+	//	printf("There should be 2 arguments!\n");
+	//	exit(1);
+	//}
 	int p_id, p;
   	int M1row, M1col, M2row, M2col, *M1, *M2, *MResult;
 	MPI_Status status;
@@ -230,7 +230,7 @@ int main(int argc, char *argv[]) {
 	MPI_Comm_size ( MPI_COMM_WORLD, &p );//identifica el total de equipos que se usarán
 	auto startTime=std::chrono::high_resolution_clock::now();
 	if(p_id==0){//Header Part
-		constructMatrix(argv[1], M1row, M1col, M2row, M2col, M1, M2, MResult);
+		constructMatrix("inputc++.txt", M1row, M1col, M2row, M2col, M1, M2, MResult);
 		int stepPart=M1row/(p-1), sizeTemp=0, *Mtemp;
 		
 		for(int nodeWorkerId=1, startPart=0, endPart=M1row/(p-1);nodeWorkerId<=p;nodeWorkerId++, endPart+=stepPart){
