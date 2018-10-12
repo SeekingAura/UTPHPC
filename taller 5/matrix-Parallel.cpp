@@ -267,7 +267,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-		opMatrix.printResult();
+		printResult();
 	}else{//Workers part
 		int NodeHeaderId=0;
 		
@@ -280,7 +280,7 @@ int main(int argc, char *argv[]) {
 		MPI_Recv(&M2row, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 		MPI_Recv(&M2col, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 
-		opMatrix.buildMatrixTemp();
+		buildMatrixTemp();
 		MPI_Recv(&M1, M1row*M1col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 		MPI_Recv(&M2, M2row*M2col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 
@@ -289,6 +289,7 @@ int main(int argc, char *argv[]) {
 		MPI_Send(&MResult, M1row*M2col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD);
 	}
 	auto endTime=std::chrono::high_resolution_clock::now();
+	chrono::duration<double>  elapsed = endTime - startTime;
 	writeTime(elapsed.count(), M2row);
 	
 	// opMatrix.printOperators();
