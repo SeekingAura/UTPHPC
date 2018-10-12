@@ -18,6 +18,43 @@ FILE * openFile(char *fileName){
 	return f;
 }
 
+void getData(FILE *f, int *M, int len){
+	/* 
+		Capture data from plain text file to system memory
+		Note: the data files need one end line to get last number
+		format of data files 
+		...
+		A
+		B
+		#.#,#.#
+		#.#,#.#
+
+		...
+		A -> Size row
+		B -> Size column
+	*/
+	//sizeof(char)==1
+	char data[10]="", ch = ' ';
+	int posData = 0, Mindex = 0;
+	while(len>Mindex){
+		ch = fgetc(f); /*get char and char in file f */
+		if(Mindex==0 && ch == '\n'){//skip nasty chracter
+			continue;
+		}
+		if(ch == ',' || ch == '\n'){
+			data[posData] = '\0'; /* char end */
+			M[Mindex] = atoi(data); /*convert string to int */
+			posData = 0;
+			strcpy(data, ""); /* take memory for the next data */
+			Mindex++;
+		}else{
+			data[posData] = ch;
+			posData++;
+		}
+
+	}
+}
+
 void constructMatrix(char *fileName1, int &M1row, int &M1col, int &M2row, int &M2col, int *M1, int *M2, int *MResult){
 	FILE *f1=NULL; /* file pointers */
 	//this->buildMatrix();
@@ -59,42 +96,7 @@ int * buildMatrix(FILE *f, int &rows, int &columns){
 	return M;
 }
 
-void getData(FILE *f, int *M, int len){
-	/* 
-		Capture data from plain text file to system memory
-		Note: the data files need one end line to get last number
-		format of data files 
-		...
-		A
-		B
-		#.#,#.#
-		#.#,#.#
 
-		...
-		A -> Size row
-		B -> Size column
-	*/
-	//sizeof(char)==1
-	char data[10]="", ch = ' ';
-	int posData = 0, Mindex = 0;
-	while(len>Mindex){
-		ch = fgetc(f); /*get char and char in file f */
-		if(Mindex==0 && ch == '\n'){//skip nasty chracter
-			continue;
-		}
-		if(ch == ',' || ch == '\n'){
-			data[posData] = '\0'; /* char end */
-			M[Mindex] = atoi(data); /*convert string to int */
-			posData = 0;
-			strcpy(data, ""); /* take memory for the next data */
-			Mindex++;
-		}else{
-			data[posData] = ch;
-			posData++;
-		}
-
-	}
-}
 
 void buildMatrixTemp(int M1row, int M1col, int M2row, int M2col, int *M1, int *M2, int *MResult){//reserve memory for Workers data
 	M1= new int[M1row*M1col];
