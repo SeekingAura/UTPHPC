@@ -205,7 +205,7 @@ void printMatrix(int row, int col, int *M){
 
 
 
-void writeTime(double elapsed, int numRows){
+void writeTime(float elapsed, int numRows){
 		/*
 			Wite the time on timesc++Parallel.txt file
 			M -> Matrix, Mrow -> Matrix rows, Mcol -> Matrix columns
@@ -289,7 +289,7 @@ int main(int argc, char *argv[]) {
 		MPI_Send(&MResult, M1row*M2col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD);
 	}
 	auto endTime=std::chrono::high_resolution_clock::now();
-	chrono::duration<double>  elapsed = endTime - startTime;
+	chrono::duration<float>  elapsed = endTime - startTime;
 	writeTime(elapsed.count(), M2row);
 	
 	// opMatrix.printOperators();
