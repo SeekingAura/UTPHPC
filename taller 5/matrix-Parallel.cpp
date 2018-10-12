@@ -7,6 +7,16 @@
 #define MSGTAG   0
 using namespace std;
 
+FILE * openFile(char *fileName){
+	/* try to open a file */
+	FILE *f=NULL;
+	f = fopen(fileName,"r");
+	if(f == NULL){
+		printf("File '%s' doesn't exist!\n",fileName);
+		exit(1);
+	}
+	return f;
+}
 
 void constructMatrix(char *fileName1, int &M1row, int &M1col, int &M2row, int &M2col, int *M1, int *M2, int *MResult){
 	FILE *f1=NULL; /* file pointers */
@@ -33,16 +43,7 @@ void constructMatrix(char *fileName1, int &M1row, int &M1col, int &M2row, int &M
 }
 	
 
-FILE * openFile(char *fileName){
-	/* try to open a file */
-	FILE *f=NULL;
-	f = fopen(fileName,"r");
-	if(f == NULL){
-		printf("File '%s' doesn't exist!\n",fileName);
-		exit(1);
-	}
-	return f;
-}
+
 
 int * buildMatrix(FILE *f, int &rows, int &columns){
 	/* build a matrix M (get memory) */
