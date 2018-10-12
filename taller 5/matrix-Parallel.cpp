@@ -55,6 +55,20 @@ void getData(FILE *f, int *M, int len){
 	}
 }
 
+int * buildMatrix(FILE *f, int &rows, int &columns){
+	/* build a matrix M (get memory) */
+	fscanf(f,"%i",&rows); /* %zu zx is int */
+	fscanf(f,"%i",&columns);
+	//fgetc(f);  /* skipping nasty character, on this case new line */
+	int *M;
+	M=new int[rows*columns];
+	if(rows <= 0 || columns <= 0){
+		printf("should be size positive and upper than cero \n");
+		exit(1);
+	}
+	return M;
+}
+
 void constructMatrix(char *fileName1, int &M1row, int &M1col, int &M2row, int &M2col, int *M1, int *M2, int *MResult){
 	FILE *f1=NULL; /* file pointers */
 	//this->buildMatrix();
@@ -82,19 +96,7 @@ void constructMatrix(char *fileName1, int &M1row, int &M1col, int &M2row, int &M
 
 
 
-int * buildMatrix(FILE *f, int &rows, int &columns){
-	/* build a matrix M (get memory) */
-	fscanf(f,"%i",&rows); /* %zu zx is int */
-	fscanf(f,"%i",&columns);
-	//fgetc(f);  /* skipping nasty character, on this case new line */
-	int *M;
-	M=new int[rows*columns];
-	if(rows <= 0 || columns <= 0){
-		printf("should be size positive and upper than cero \n");
-		exit(1);
-	}
-	return M;
-}
+
 
 
 
