@@ -92,12 +92,6 @@ void constructMatrix(char *fileName1, int &M1row, int &M1col, int &M2row, int &M
 	// fscanf(f,"%i",this->M2col);	
 
 }
-	
-
-
-
-
-
 
 
 void buildMatrixTemp(int M1row, int M1col, int M2row, int M2col, int *M1, int *M2, int *MResult){//reserve memory for Workers data
@@ -236,7 +230,7 @@ int main(int argc, char *argv[]) {
 	MPI_Comm_size ( MPI_COMM_WORLD, &p );//identifica el total de equipos que se usarán
 	auto startTime=std::chrono::high_resolution_clock::now();
 	if(p_id==0){//Header Part
-		constructMatrix(argv[1], M1row, M1col, M2row, M2col, *M1, *M2, *MResult);
+		constructMatrix(argv[1], M1row, M1col, M2row, M2col, M1, M2, MResult);
 		int stepPart=M1row/(p-1), sizeTemp=0, *Mtemp;
 		
 		for(int nodeWorkerId=1, startPart=0, endPart=M1row/(p-1);nodeWorkerId<=p;nodeWorkerId++, endPart+=stepPart){
