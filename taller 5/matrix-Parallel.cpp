@@ -267,7 +267,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-		printResult();
+		printMatrix(M1row, M2col, MResult);
 	}else{//Workers part
 		int NodeHeaderId=0;
 		
@@ -280,11 +280,11 @@ int main(int argc, char *argv[]) {
 		MPI_Recv(&M2row, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 		MPI_Recv(&M2col, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 
-		buildMatrixTemp();
+		buildMatrixTemp(M1row, M1col, M2row, M2col, M1, M2, MResult);
 		MPI_Recv(&M1, M1row*M1col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 		MPI_Recv(&M2, M2row*M2col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 
-		mulParallelRow(MResult, M1, M2, M1row, M2col);
+		mulParallelRow(M1row, M2col, M1, M2, MResult);
 
 		MPI_Send(&MResult, M1row*M2col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD);
 	}
