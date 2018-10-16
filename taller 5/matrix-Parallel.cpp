@@ -69,7 +69,7 @@ int * buildMatrix(FILE *f, int &rows, int &columns){
 	return M;
 }
 
-void constructMatrix(char *fileName1, int &M1row, int &M1col, int &M2row, int &M2col, int *M1, int *M2, int *MResult){
+void constructMatrix(char *fileName1, int &M1row, int &M1col, int &M2row, int &M2col, int *M1, int *M2){
 	FILE *f1=NULL; /* file pointers */
 	//this->buildMatrix();
 	//printf("constructor\n");
@@ -80,7 +80,6 @@ void constructMatrix(char *fileName1, int &M1row, int &M1col, int &M2row, int &M
 
 	M2=buildMatrix(f1, M2row, M2col);
 	getData(f1, M2, M2row*M2col);
-	MResult=new int[M1row*M2col];
 	
 	
 	
@@ -149,7 +148,7 @@ void mulSecuential(int M1row, int M1col, int M2row, int M2col, int *M1, int *M2,
 	}
 }
 
-void mulParallelRow(int M1row, int M2col, int *M1, int *M2, int *MResult){
+void mulParallelRow(int startRow, int endRow, int M2col, int *M1, int *M2, int *MResult){
 	/*
 		This function will multiply two matrices (M1,M2)
 		M1 -> Matrix1, M2 -> Matrix2, M1row -> Matrix1 rows, M1col -> Matrix1
@@ -163,7 +162,7 @@ void mulParallelRow(int M1row, int M2col, int *M1, int *M2, int *MResult){
 	#pragma omp parallel private(i,j,k,numThreads) shared(MResult,chunk) //num_threads(8)
 	{
 		#pragma omp for schedule(dynamic,chunk)
-			for(i=0; i<M1row; i++){//every row m1
+			for(i=startRow; i<endRow; i++){//every row m1
 				for(j=0; j<M2col; j++){//every column m2
 					int data = 0;
 					for(k=0; k<M2col; k++){//take in row per value column
@@ -223,42 +222,32 @@ int main(int argc, char *argv[]) {
 	//	exit(1);
 	//}
 	int p_id, p;
-  	int M1row, M1col, M2row, M2col, *M1, *M2, *MResult;
+  	int M1row, M1col, M2row, M2col, *M1, *M2, *MResult, *Mtemp;
 	MPI_Status status;
 	MPI_Init ( &argc, &argv );
 	MPI_Comm_rank ( MPI_COMM_WORLD, &p_id );//identifica el número de equipo que está corriendo
 	MPI_Comm_size ( MPI_COMM_WORLD, &p );//identifica el total de equipos que se usarán
+	constructMatrix("inputc++.txt", M1row, M1col, M2row, M2col, M1, M2, MResult);
 	auto startTime=std::chrono::high_resolution_clock::now();
 	if(p_id==0){//Header Part
-		constructMatrix("inputc++.txt", M1row, M1col, M2row, M2col, M1, M2, MResult);
-		int stepPart=M1row/(p-1), sizeTemp=0, *Mtemp;
+		int stepPart=M1row/(p-1), sizeTemp=0;
+		MResult=new int[M1row*M2col];
 		
-		for(int nodeWorkerId=1, startPart=0, endPart=M1row/(p-1);nodeWorkerId<=p;nodeWorkerId++, endPart+=stepPart){
+		for(int nodeWorkerId=1, startPart=0, endPart=stepPart;nodeWorkerId<=p;nodeWorkerId++, endPart+=stepPart){
 			
-			if(nodeWorkerId==p){
+			if(nodeWorkerId==p-1){
 				endPart=M1row;
 			}
-			sizeTemp=endPart-startPart;
-			MPI_Send(&sizeTemp, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
-			MPI_Send(&M1col, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
-			Mtemp= new int[(sizeTemp)*M1col];
-			for(int numRow=startPart, numPos=0; numRow<endPart; numRow++){//Fill part of MatrixTemp (operator rows)
-				for(int numCol=0; numCol<M1col; numCol++, numPos++){
-					Mtemp[numPos]=M1[numRow*M1row+numCol];
-				}
-			}
-			MPI_Send(&M2row, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
-			MPI_Send(&M2col, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
-			MPI_Send(&Mtemp, sizeTemp,MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
-			MPI_Send(&M2, M2row*M2col, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
+			MPI_Send(&startPart, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
+			MPI_Send(&endPart, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
 			startPart=endPart;
-			delete [] Mtemp;
 		}
 		
-		for(int nodeWorkerId=1, startPart=0, endPart=M1row/(p-1);nodeWorkerId<=p;nodeWorkerId++, endPart+=stepPart){
+		for(int nodeWorkerId=1, startPart=0, endPart=stepPart; nodeWorkerId<=p; nodeWorkerId++, endPart+=stepPart){
 			if(nodeWorkerId==p){
 				endPart=M1row;
 			}
+			Mtemp = new int[endPart-startPart];
 			MPI_Recv(&Mtemp, endPart-startPart, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD, &status);
 			for(int numRow=startPart, numPos=0; numRow<endPart; numRow++){//Fill part of MatrixTemp (operator rows) into MResult
 				for(int numCol=0; numCol<M1col; numCol++, numPos++){
@@ -269,22 +258,15 @@ int main(int argc, char *argv[]) {
 
 		printMatrix(M1row, M2col, MResult);
 	}else{//Workers part
-		int NodeHeaderId=0;
+		int NodeHeaderId=0, startRow=0, endRow=0;
 		
-		// M1 info
-		// printf("%i", M1row);
-		MPI_Recv(&M1row, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
-		MPI_Recv(&M1col, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
+		MPI_Recv(&startRow, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
+		MPI_Recv(&endRow, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 
-		//M2 info
-		MPI_Recv(&M2row, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
-		MPI_Recv(&M2col, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
+		
+		
 
-		buildMatrixTemp(M1row, M1col, M2row, M2col, M1, M2, MResult);
-		MPI_Recv(&M1, M1row*M1col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
-		MPI_Recv(&M2, M2row*M2col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
-
-		mulParallelRow(M1row, M2col, M1, M2, MResult);
+		mulParallelRow(startRow, endRow, M2col, M1, M2, MResult);
 
 		MPI_Send(&MResult, M1row*M2col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD);
 	}
