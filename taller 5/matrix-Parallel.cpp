@@ -214,19 +214,22 @@ int main(int argc, char *argv[]) {
 	//	printf("There should be 2 arguments!\n");
 	//	exit(1);
 	//}
-	int p_id, p;
-  	int M1row, M1col, M2row, M2col, *M1, *M2, *MResult, *Mtemp;
-	MPI_Status status;
 	MPI_Init ( &argc, &argv );
+	MPI_Status status;
+	int p_id, p;
 	MPI_Comm_rank ( MPI_COMM_WORLD, &p_id );//identifica el número de equipo que está corriendo
 	MPI_Comm_size ( MPI_COMM_WORLD, &p );//identifica el total de equipos que se usarán
+  	int M1row, M1col, M2row, M2col, *M1, *M2, *MResult, *Mtemp;	
 	constructMatrix("inputc++.txt", M1row, M1col, M2row, M2col, M1, M2);
 	auto startTime=std::chrono::high_resolution_clock::now();
-	if(p_id==0){//Header Part
+
+	//Header part
+	if(p_id==0) {
 		int stepPart=M1row/(p-1), sizeTemp=0;
 		MResult=new int[M1row*M2col];
 		
-		for(int nodeWorkerId=1, startPart=0, endPart=stepPart;nodeWorkerId<p;nodeWorkerId++, endPart+=stepPart){
+		for(int nodeWorkerId=1,startPart=0,endPart=stepPart ; nodeWorkerId<p ; nodeWorkerId++, endPart+=stepPart)
+		{
 			
 			if(nodeWorkerId==p-1){
 				endPart=M1row;
@@ -236,23 +239,31 @@ int main(int argc, char *argv[]) {
 			startPart=endPart;
 		}
 		
-		for(int nodeWorkerId=1, startPart=0, endPart=stepPart; nodeWorkerId<p; nodeWorkerId++, endPart+=stepPart){
-			if(nodeWorkerId==p){
+		for(int nodeWorkerId=1, startPart=0, endPart=stepPart; nodeWorkerId<p; nodeWorkerId++, endPart+=stepPart) 
+		{
+			if(nodeWorkerId==p-1){
 				endPart=M1row;
 			}
-			Mtemp = new int[endPart-startPart];
-			MPI_Recv(&Mtemp, endPart-startPart, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD, &status);
-			for(int numRow=startPart, numPos=0; numRow<endPart; numRow++){//Fill part of MatrixTemp (operator rows) into MResult
+
+			Mtemp = new int[(endPart-startPart)*M2col];
+			MPI_Recv(&Mtemp, (endPart-startPart)*M2col, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD, &status);
+
+			//Fill part of MatrixTemp (operator rows) into MResult
+			for(int numRow=startPart, numPos=0; numRow<endPart; numRow++){
 				for(int numCol=0; numCol<M1col; numCol++, numPos++){
 					MResult[numRow*M1row+numCol]=Mtemp[numPos];
 				}
 			}
+			delete [] Mtemp;
+			startPart=endPart;
 		}
 
 		printMatrix(M1row, M2col, MResult);
-	}else{//Workers part
+	}
+
+	//Workers part
+	else{
 		int NodeHeaderId=0, startRow=0, endRow=0;
-		
 		MPI_Recv(&startRow, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 		MPI_Recv(&endRow, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 
@@ -261,8 +272,9 @@ int main(int argc, char *argv[]) {
 
 		mulParallelRow(startRow, endRow, M2col, M1, M2, MResult);
 
-		MPI_Send(&MResult, M1row*M2col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD);
+		MPI_Send(&MResult, (endRow - startRow)*M2col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD);
 	}
+
 	auto endTime=std::chrono::high_resolution_clock::now();
 	chrono::duration<float>  elapsed = endTime - startTime;
 	writeTime(elapsed.count(), M2row);
