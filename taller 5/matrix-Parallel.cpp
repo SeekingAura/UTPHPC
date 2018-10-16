@@ -219,7 +219,7 @@ int main(int argc, char *argv[]) {
 	int p_id, p;
 	MPI_Comm_rank ( MPI_COMM_WORLD, &p_id );//identifica el número de equipo que está corriendo
 	MPI_Comm_size ( MPI_COMM_WORLD, &p );//identifica el total de equipos que se usarán
-  	int M1row, M1col, M2row, M2col, *M1, *M2, *MResult, *Mtemp;	
+  	int M1row, M1col, M2row, M2col, *M1, *M2, *MResult, *Mtemp, stop;	
 	constructMatrix("inputc++.txt", M1row, M1col, M2row, M2col, M1, M2);
 	auto startTime=std::chrono::high_resolution_clock::now();
 
@@ -227,14 +227,15 @@ int main(int argc, char *argv[]) {
 	if(p_id==0) {
 		int stepPart=M1row/(p-1), sizeTemp=0;
 		MResult=new int[M1row*M2col];
-		
+		scanf("%d", &stop);
 		for(int nodeWorkerId=1,startPart=0,endPart=stepPart ; nodeWorkerId<p ; nodeWorkerId++, endPart+=stepPart)
 		{
 			
 			if(nodeWorkerId==p-1){
 				endPart=M1row;
 			}
-			printf("haciendo lo primero en el worker %i", nodeWorkerId);
+			sh Worker1
+rintf("haciendo lo primero en el worker %i", nodeWorkerId);
 			MPI_Send(&startPart, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
 			MPI_Send(&endPart, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
 			printf("lo envie a worker %i", nodeWorkerId);
