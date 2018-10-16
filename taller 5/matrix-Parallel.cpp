@@ -234,8 +234,8 @@ int main(int argc, char *argv[]) {
 			if(nodeWorkerId==p-1){
 				endPart=M1row;
 			}
-			sh Worker1
-rintf("haciendo lo primero en el worker %i", nodeWorkerId);
+			
+			printf("haciendo lo primero en el worker %i", nodeWorkerId);
 			MPI_Send(&startPart, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
 			MPI_Send(&endPart, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
 			printf("lo envie a worker %i", nodeWorkerId);
