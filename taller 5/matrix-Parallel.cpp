@@ -93,13 +93,6 @@ void constructMatrix(char *fileName1, int &M1row, int &M1col, int &M2row, int &M
 }
 
 
-void buildMatrixTemp(int M1row, int M1col, int M2row, int M2col, int *M1, int *M2, int *MResult){//reserve memory for Workers data
-	M1= new int[M1row*M1col];
-	M2= new int[M2row*M2col];
-	MResult= new int[M1row*M2col];
-
-}
-
 	
 void writeResult(int M1row, int M2col, int *MResult){
 	/*
@@ -154,7 +147,7 @@ void mulParallelRow(int startRow, int endRow, int M2col, int *M1, int *M2, int *
 		M1 -> Matrix1, M2 -> Matrix2, M1row -> Matrix1 rows, M1col -> Matrix1
 		columns, M2row -> Matrix2 rows, M2col -> Matrix2 columns
 	*/
-	int i=0,j=0,k=0, chunk=M1row/8;
+	int i=0,j=0,k=0, chunk= (endRow - startRow) /8;
 	int numThreads = 0;
 	if(chunk==0){
 		chunk=1;
@@ -227,7 +220,7 @@ int main(int argc, char *argv[]) {
 	MPI_Init ( &argc, &argv );
 	MPI_Comm_rank ( MPI_COMM_WORLD, &p_id );//identifica el número de equipo que está corriendo
 	MPI_Comm_size ( MPI_COMM_WORLD, &p );//identifica el total de equipos que se usarán
-	constructMatrix("inputc++.txt", M1row, M1col, M2row, M2col, M1, M2, MResult);
+	constructMatrix("inputc++.txt", M1row, M1col, M2row, M2col, M1, M2);
 	auto startTime=std::chrono::high_resolution_clock::now();
 	if(p_id==0){//Header Part
 		int stepPart=M1row/(p-1), sizeTemp=0;
