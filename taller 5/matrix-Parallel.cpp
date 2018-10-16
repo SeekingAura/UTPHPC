@@ -226,7 +226,7 @@ int main(int argc, char *argv[]) {
 		int stepPart=M1row/(p-1), sizeTemp=0;
 		MResult=new int[M1row*M2col];
 		
-		for(int nodeWorkerId=1, startPart=0, endPart=stepPart;nodeWorkerId<=p;nodeWorkerId++, endPart+=stepPart){
+		for(int nodeWorkerId=1, startPart=0, endPart=stepPart;nodeWorkerId<p;nodeWorkerId++, endPart+=stepPart){
 			
 			if(nodeWorkerId==p-1){
 				endPart=M1row;
@@ -236,7 +236,7 @@ int main(int argc, char *argv[]) {
 			startPart=endPart;
 		}
 		
-		for(int nodeWorkerId=1, startPart=0, endPart=stepPart; nodeWorkerId<=p; nodeWorkerId++, endPart+=stepPart){
+		for(int nodeWorkerId=1, startPart=0, endPart=stepPart; nodeWorkerId<p; nodeWorkerId++, endPart+=stepPart){
 			if(nodeWorkerId==p){
 				endPart=M1row;
 			}
