@@ -234,8 +234,10 @@ int main(int argc, char *argv[]) {
 			if(nodeWorkerId==p-1){
 				endPart=M1row;
 			}
+			printf("haciendo lo primero en el worker %i", nodeWorkerId);
 			MPI_Send(&startPart, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
 			MPI_Send(&endPart, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
+			printf("lo envie a worker %i", nodeWorkerId);
 			startPart=endPart;
 		}
 		
@@ -246,8 +248,9 @@ int main(int argc, char *argv[]) {
 			}
 
 			Mtemp = new int[(endPart-startPart)*M2col];
+			printf("recibiendo resultado de Worker %i", nodeWorkerId);
 			MPI_Recv(&Mtemp, (endPart-startPart)*M2col, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD, &status);
-
+			printf("recibi el resultado del worker %i", nodeWorkerId);
 			//Fill part of MatrixTemp (operator rows) into MResult
 			for(int numRow=startPart, numPos=0; numRow<endPart; numRow++){
 				for(int numCol=0; numCol<M1col; numCol++, numPos++){
@@ -264,15 +267,17 @@ int main(int argc, char *argv[]) {
 	//Workers part
 	else{
 		int NodeHeaderId=0, startRow=0, endRow=0;
+		printf("recibiendo valores del header, soy worker %i", p_id);
 		MPI_Recv(&startRow, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
 		MPI_Recv(&endRow, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
-
+		printf("recibi los valores del header, soy worker %i", p_id);
 		
 		
 
 		mulParallelRow(startRow, endRow, M2col, M1, M2, MResult);
-
+		printf("enviando mi resultado, soy el worker %i", p_id);
 		MPI_Send(&MResult, (endRow - startRow)*M2col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD);
+		printf("envie el resultado, soy el worker %i", p_id);
 	}
 
 	auto endTime=std::chrono::high_resolution_clock::now();
