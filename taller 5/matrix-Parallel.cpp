@@ -4,7 +4,7 @@
 #include <mpi.h>
 #include <chrono>
 #include <omp.h>
-#define MSGTAG   0
+
 using namespace std;
 
 FILE * openFile(char *fileName){
@@ -236,8 +236,8 @@ int main(int argc, char *argv[]) {
 			}
 			
 			printf("haciendo lo primero en el worker %i", nodeWorkerId);
-			MPI_Send(&startPart, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
-			MPI_Send(&endPart, 1, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD);
+			MPI_Send(&startPart, 1, MPI_INT, nodeWorkerId, 0, MPI_COMM_WORLD);
+			MPI_Send(&endPart, 1, MPI_INT, nodeWorkerId, 0, MPI_COMM_WORLD);
 			printf("lo envie a worker %i", nodeWorkerId);
 			startPart=endPart;
 		}
@@ -250,7 +250,7 @@ int main(int argc, char *argv[]) {
 
 			Mtemp = new int[(endPart-startPart)*M2col];
 			printf("recibiendo resultado de Worker %i", nodeWorkerId);
-			MPI_Recv(&Mtemp, (endPart-startPart)*M2col, MPI_INT, nodeWorkerId, MSGTAG, MPI_COMM_WORLD, &status);
+			MPI_Recv(&Mtemp, (endPart-startPart)*M2col, MPI_INT, nodeWorkerId, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 			printf("recibi el resultado del worker %i", nodeWorkerId);
 			//Fill part of MatrixTemp (operator rows) into MResult
 			for(int numRow=startPart, numPos=0; numRow<endPart; numRow++){
@@ -269,15 +269,15 @@ int main(int argc, char *argv[]) {
 	else{
 		int NodeHeaderId=0, startRow=0, endRow=0;
 		printf("recibiendo valores del header, soy worker %i", p_id);
-		MPI_Recv(&startRow, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
-		MPI_Recv(&endRow, 1, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD, &status);
+		MPI_Recv(&startRow, 1, MPI_INT, NodeHeaderId, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		MPI_Recv(&endRow, 1, MPI_INT, NodeHeaderId, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		printf("recibi los valores del header, soy worker %i", p_id);
 		
 		
 
 		mulParallelRow(startRow, endRow, M2col, M1, M2, MResult);
 		printf("enviando mi resultado, soy el worker %i", p_id);
-		MPI_Send(&MResult, (endRow - startRow)*M2col, MPI_INT, NodeHeaderId, MSGTAG, MPI_COMM_WORLD);
+		MPI_Send(&MResult, (endRow - startRow)*M2col, MPI_INT, NodeHeaderId, 0, MPI_COMM_WORLD);
 		printf("envie el resultado, soy el worker %i", p_id);
 	}
 
