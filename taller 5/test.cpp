@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
     int world_size;
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-    printf("world_rank %i" world_rank);
+    printf("world_rank %i", world_rank);
     int number;
     if (world_rank == 0) {
         number = -1;
