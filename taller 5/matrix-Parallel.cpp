@@ -227,14 +227,14 @@ int main(int argc, char *argv[]) {
 	if(p_id==0) {
 		int stepPart=M1row/(p-1), sizeTemp=0;
 		MResult=new int[M1row*M2col];
-		scanf("%d", &stop);
+		
 		for(int nodeWorkerId=1,startPart=0,endPart=stepPart ; nodeWorkerId<p ; nodeWorkerId++, endPart+=stepPart)
 		{
 			
 			if(nodeWorkerId==p-1){
 				endPart=M1row;
 			}
-			
+			scanf("%d", &stop);
 			printf("haciendo lo primero en el worker %i", nodeWorkerId);
 			MPI_Send(&startPart, 1, MPI_INT, nodeWorkerId, 0, MPI_COMM_WORLD);
 			MPI_Send(&endPart, 1, MPI_INT, nodeWorkerId, 0, MPI_COMM_WORLD);
