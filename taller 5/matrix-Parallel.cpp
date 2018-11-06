@@ -234,11 +234,20 @@ int main(int argc, char *argv[]) {
 			if(nodeWorkerId==p-1){
 				endPart=M1row;
 			}
-			scanf("%d", &stop);
-			printf("haciendo lo primero en el worker %i", nodeWorkerId);
+			//scanf("%d", &stop);
+			//printf("haciendo lo primero en el worker %i", nodeWorkerId);
 			MPI_Send(&startPart, 1, MPI_INT, nodeWorkerId, 0, MPI_COMM_WORLD);
 			MPI_Send(&endPart, 1, MPI_INT, nodeWorkerId, 0, MPI_COMM_WORLD);
-			printf("lo envie a worker %i", nodeWorkerId);
+			Mtemp = new int[(endPart-startPart)*M2col];
+			for(int numRow=startPart, numPos=0; numRow<endPart; numRow++){
+				for(int numCol=0; numCol<M1col; numCol++, numPos++){
+					M1[numRow*M1row+numCol]=Mtemp[numPos];
+				}
+			}
+			
+			MPI_Send(&Mtemp, (endPart-startPart)*M2col, MPI_INT, nodeWorkerId, 0, MPI_COMM_WORLD);
+			delete [] Mtemp;
+			//printf("lo envie a worker %i", nodeWorkerId);
 			startPart=endPart;
 		}
 		
@@ -267,13 +276,15 @@ int main(int argc, char *argv[]) {
 
 	//Workers part
 	else{
+
 		int NodeHeaderId=0, startRow=0, endRow=0;
 		printf("recibiendo valores del header, soy worker %i", p_id);
 		MPI_Recv(&startRow, 1, MPI_INT, NodeHeaderId, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		MPI_Recv(&endRow, 1, MPI_INT, NodeHeaderId, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		printf("recibi los valores del header, soy worker %i", p_id);
-		
-		
+		MResult=new int([endRow-startRow)*M2col];
+		Mtemp=new int([endRow-startRow)*M2col];
+		MPI_Recv(&Mtemp, endRow-startRow)*M2col, MPI_INT, NodeHeaderId, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
 		mulParallelRow(startRow, endRow, M2col, M1, M2, MResult);
 		printf("enviando mi resultado, soy el worker %i", p_id);
